@@ -1,0 +1,777 @@
+[index.html](https://github.com/user-attachments/files/25970445/index.html)
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐵 Based Jail Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(180deg, #1a2f1a 0%, #2d4a2d 50%, #1a3a1a 100%);
+            background-image: 
+                repeating-linear-gradient(90deg, transparent, transparent 35px, rgba(101, 67, 33, 0.1) 35px, rgba(101, 67, 33, 0.1) 40px),
+                repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(101, 67, 33, 0.1) 35px, rgba(101, 67, 33, 0.1) 40px),
+                radial-gradient(ellipse at 20% 30%, rgba(34, 139, 34, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(46, 125, 50, 0.3) 0%, transparent 50%),
+                linear-gradient(180deg, #0d1f0d 0%, #1a3a1a 50%, #0d250d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 3%),
+                radial-gradient(circle at 25% 25%, rgba(255, 215, 0, 0.15) 0%, transparent 3%),
+                radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.15) 0%, transparent 3%),
+                radial-gradient(circle at 85% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 3%),
+                radial-gradient(circle at 75% 25%, rgba(255, 215, 0, 0.15) 0%, transparent 3%),
+                radial-gradient(circle at 80% 30%, rgba(255, 215, 0, 0.15) 0%, transparent 3%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        body::after {
+            content: '🌴';
+            position: absolute;
+            font-size: 120px;
+            opacity: 0.2;
+            bottom: 50px;
+            left: 50px;
+            animation: sway 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+        }
+        
+        @keyframes sway {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.5),
+                inset 0 0 0 2px rgba(139, 69, 19, 0.3);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #8B4513 100%);
+            padding: 20px;
+            text-align: center;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 20px rgba(255, 215, 0, 0.5);
+            border-bottom: 4px solid #654321;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 11px),
+                linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.2) 100%);
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7), 0 0 20px rgba(255, 215, 0, 0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .score-item {
+            background: rgba(139, 69, 19, 0.4);
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-area {
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .monkey-sprite {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            position: relative;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .monkey-face {
+            width: 100%;
+            height: 100%;
+            background: #8B4513;
+            border-radius: 50%;
+            position: relative;
+            border: 4px solid #654321;
+        }
+
+        .monkey-ear {
+            width: 30px;
+            height: 40px;
+            background: #A0522D;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+        }
+
+        .ear-left { left: -15px; }
+        .ear-right { right: -15px; }
+
+        .monkey-face-inner {
+            width: 70px;
+            height: 70px;
+            background: #D2691E;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .monkey-eye {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+        }
+
+        .eye-left { left: 25px; }
+        .eye-right { right: 25px; }
+
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background: black;
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            animation: lookAround 3s infinite;
+        }
+
+        @keyframes lookAround {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(3px, 0); }
+            50% { transform: translate(0, 3px); }
+            75% { transform: translate(-3px, 0); }
+        }
+
+        .monkey-mouth {
+            width: 30px;
+            height: 15px;
+            border: 3px solid #654321;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .prison-hat {
+            width: 110px;
+            height: 40px;
+            background: repeating-linear-gradient(
+                90deg,
+                black 0px,
+                black 20px,
+                white 20px,
+                white 40px
+            );
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .game-menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .game-button {
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: #FFD700;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Comic Sans MS', cursive;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .game-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .game-button:active {
+            transform: translateY(0);
+        }
+
+        .mini-game {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .mini-game.active {
+            display: block;
+        }
+
+        .back-button {
+            background: #8B4513;
+            color: #FFD700;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-family: 'Comic Sans MS', cursive;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .card-game {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #654321 0%, #8B4513 100%);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            transition: transform 0.3s;
+            user-select: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .card.flipped {
+            background: white;
+            border: 3px solid #8B4513;
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            background: #2ecc71;
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .banana-catch {
+            position: relative;
+            height: 350px;
+            background: linear-gradient(180deg, #1a2f1a 0%, #2d4a2d 50%, #3a5a3a 100%);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+            box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.1);
+        }
+
+        .basket {
+            width: 80px;
+            height: 60px;
+            background: #8B4513;
+            border-radius: 0 0 10px 10px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 3px solid #654321;
+        }
+
+        .banana {
+            width: 40px;
+            height: 40px;
+            background: #FFD700;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: absolute;
+            top: -50px;
+            animation: fall linear;
+            cursor: pointer;
+        }
+
+        @keyframes fall {
+            to { top: 100%; }
+        }
+
+        .banana::before {
+            content: '';
+            width: 10px;
+            height: 15px;
+            background: #8B4513;
+            position: absolute;
+            top: -5px;
+            left: 15px;
+            border-radius: 50%;
+        }
+
+        .reaction-game {
+            text-align: center;
+        }
+
+        .reaction-box {
+            width: 100%;
+            height: 200px;
+            background: #e74c3c;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .reaction-box.green {
+            background: #2ecc71;
+        }
+
+        .instruction {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #8B4513;
+        }
+
+        .stats {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #8B4513;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🐵 Based Jail Games</h1>
+            <div class="score-board">
+                <div class="score-item">🍌 Bananas: <span id="bananas">0</span></div>
+                <div class="score-item">⭐ Points: <span id="score">0</span></div>
+                <div class="score-item">🎮 Games: <span id="gamesPlayed">0</span></div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div id="mainMenu">
+                <div class="monkey-sprite">
+                    <div class="prison-hat"></div>
+                    <div class="monkey-face">
+                        <div class="monkey-ear ear-left"></div>
+                        <div class="monkey-ear ear-right"></div>
+                        <div class="monkey-eye eye-left">
+                            <div class="pupil"></div>
+                        </div>
+                        <div class="monkey-eye eye-right">
+                            <div class="pupil"></div>
+                        </div>
+                        <div class="monkey-face-inner"></div>
+                        <div class="monkey-mouth"></div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <p style="font-size: 1.1em; color: #555;">
+                        Help the monkey have fun in prison! 🎮
+                    </p>
+                </div>
+
+                <div class="game-menu">
+                    <button class="game-button" onclick="startGame('memory')">
+                        🧠 Memory<br><small>Find pairs</small>
+                    </button>
+                    <button class="game-button" onclick="startGame('catch')">
+                        🍌 Catch Bananas<br><small>Catch them all</small>
+                    </button>
+                    <button class="game-button" onclick="startGame('reaction')">
+                        ⚡ Reaction<br><small>Click fast</small>
+                    </button>
+                    <button class="game-button" onclick="startGame('tap')">
+                        👆 Tap Game<br><small>Click quickly</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Memory game -->
+            <div id="memoryGame" class="mini-game">
+                <button class="back-button" onclick="backToMenu()">← Back</button>
+                <div class="instruction">
+                    🧠 Find all pairs of cards! Click on cards and remember where everything is.
+                </div>
+                <div class="stats">Pairs found: <span id="pairsFound">0</span>/8</div>
+                <div class="card-game" id="cardGrid"></div>
+            </div>
+
+            <!-- Banana catching game -->
+            <div id="catchGame" class="mini-game">
+                <button class="back-button" onclick="backToMenu()">← Back</button>
+                <div class="instruction">
+                    🍌 Catch the bananas! Move the basket with your mouse and click on bananas. Don't miss any!
+                </div>
+                <div class="stats">Caught: <span id="caught">0</span> | Missed: <span id="missed">0</span></div>
+                <div class="banana-catch" id="bananaField">
+                    <div class="basket" id="basket"></div>
+                </div>
+            </div>
+
+            <!-- Reaction game -->
+            <div id="reactionGame" class="mini-game">
+                <button class="back-button" onclick="backToMenu()">← Back</button>
+                <div class="instruction">
+                    ⚡ Test your reaction! When the square turns green, click as fast as you can!
+                </div>
+                <div class="stats">Best time: <span id="bestTime">-</span> ms</div>
+                <div class="reaction-box" id="reactionBox" onclick="reactionClick()">
+                    Wait for green...
+                </div>
+            </div>
+
+            <!-- Tap game -->
+            <div id="tapGame" class="mini-game">
+                <button class="back-button" onclick="backToMenu()">← Back</button>
+                <div class="instruction">
+                    👆 Click as fast as you can in 10 seconds!
+                </div>
+                <div class="stats">
+                    Clicks: <span id="tapCount">0</span> | 
+                    Time: <span id="tapTime">10</span>s
+                </div>
+                <button class="game-button" style="width: 100%; margin-top: 20px; padding: 60px;" id="tapButton" onclick="tap()">
+                    CLICK HERE! 🖱️
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            bananas: 0,
+            score: 0,
+            gamesPlayed: 0
+        };
+
+        // Memory game
+        const emojis = ['🍌', '🍇', '🍎', '🍊', '🍓', '🥝', '🍉', '🍒'];
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+
+        function startGame(gameType) {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.querySelectorAll('.mini-game').forEach(g => g.classList.remove('active'));
+            
+            if (gameType === 'memory') {
+                document.getElementById('memoryGame').classList.add('active');
+                initMemoryGame();
+            } else if (gameType === 'catch') {
+                document.getElementById('catchGame').classList.add('active');
+                initCatchGame();
+            } else if (gameType === 'reaction') {
+                document.getElementById('reactionGame').classList.add('active');
+                initReactionGame();
+            } else if (gameType === 'tap') {
+                document.getElementById('tapGame').classList.add('active');
+                initTapGame();
+            }
+        }
+
+        function backToMenu() {
+            document.querySelectorAll('.mini-game').forEach(g => g.classList.remove('active'));
+            document.getElementById('mainMenu').style.display = 'block';
+            stopAllGames();
+        }
+
+        function stopAllGames() {
+            // Stop all games
+            if (window.bananaInterval) clearInterval(window.bananaInterval);
+            if (window.reactionTimeout) clearTimeout(window.reactionTimeout);
+            if (window.tapInterval) clearInterval(window.tapInterval);
+        }
+
+        function updateStats() {
+            document.getElementById('bananas').textContent = gameState.bananas;
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('gamesPlayed').textContent = gameState.gamesPlayed;
+        }
+
+        function addReward(bananas, score) {
+            gameState.bananas += bananas;
+            gameState.score += score;
+            gameState.gamesPlayed++;
+            updateStats();
+        }
+
+        // === MEMORY GAME ===
+        function initMemoryGame() {
+            matchedPairs = 0;
+            flippedCards = [];
+            cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+            
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = '';
+            
+            cards.forEach((emoji, index) => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+                card.onclick = () => flipCard(card);
+                grid.appendChild(card);
+            });
+            
+            document.getElementById('pairsFound').textContent = '0';
+        }
+
+        function flipCard(card) {
+            if (flippedCards.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) {
+                return;
+            }
+            
+            card.classList.add('flipped');
+            card.textContent = card.dataset.emoji;
+            flippedCards.push(card);
+            
+            if (flippedCards.length === 2) {
+                setTimeout(checkMatch, 600);
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            
+            if (card1.dataset.emoji === card2.dataset.emoji) {
+                card1.classList.add('matched');
+                card2.classList.add('matched');
+                matchedPairs++;
+                document.getElementById('pairsFound').textContent = matchedPairs;
+                addReward(2, 10);
+                
+                if (matchedPairs === 8) {
+                    setTimeout(() => {
+                        alert('🎉 Congratulations! You found all pairs! +50 bonus points!');
+                        addReward(5, 50);
+                    }, 300);
+                }
+            } else {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+                card1.textContent = '';
+                card2.textContent = '';
+            }
+            
+            flippedCards = [];
+        }
+
+        // === BANANA CATCH GAME ===
+        let caughtCount = 0;
+        let missedCount = 0;
+
+        function initCatchGame() {
+            caughtCount = 0;
+            missedCount = 0;
+            document.getElementById('caught').textContent = '0';
+            document.getElementById('missed').textContent = '0';
+            
+            const field = document.getElementById('bananaField');
+            const basket = document.getElementById('basket');
+            
+            field.onmousemove = (e) => {
+                const rect = field.getBoundingClientRect();
+                let x = e.clientX - rect.left - 40;
+                x = Math.max(0, Math.min(x, rect.width - 80));
+                basket.style.left = x + 'px';
+            };
+            
+            window.bananaInterval = setInterval(dropBanana, 1500);
+        }
+
+        function dropBanana() {
+            const field = document.getElementById('bananaField');
+            const banana = document.createElement('div');
+            banana.className = 'banana';
+            banana.style.left = Math.random() * (field.offsetWidth - 40) + 'px';
+            
+            const duration = 3 + Math.random() * 2;
+            banana.style.animationDuration = duration + 's';
+            
+            banana.onclick = () => catchBanana(banana);
+            
+            field.appendChild(banana);
+            
+            setTimeout(() => {
+                if (banana.parentElement) {
+                    banana.remove();
+                    missedCount++;
+                    document.getElementById('missed').textContent = missedCount;
+                }
+            }, duration * 1000);
+        }
+
+        function catchBanana(banana) {
+            banana.remove();
+            caughtCount++;
+            document.getElementById('caught').textContent = caughtCount;
+            addReward(1, 5);
+        }
+
+        // === REACTION GAME ===
+        let reactionStart = 0;
+        let reactionWaiting = false;
+        let bestReaction = Infinity;
+
+        function initReactionGame() {
+            reactionWaiting = false;
+            const box = document.getElementById('reactionBox');
+            box.classList.remove('green');
+            box.textContent = 'Wait for green...';
+            
+            window.reactionTimeout = setTimeout(() => {
+                box.classList.add('green');
+                box.textContent = 'CLICK NOW!';
+                reactionStart = Date.now();
+                reactionWaiting = true;
+            }, 2000 + Math.random() * 3000);
+        }
+
+        function reactionClick() {
+            const box = document.getElementById('reactionBox');
+            
+            if (!reactionWaiting) {
+                if (!box.classList.contains('green')) {
+                    box.textContent = 'Too early! Wait for green...';
+                    setTimeout(initReactionGame, 1500);
+                }
+                return;
+            }
+            
+            const reactionTime = Date.now() - reactionStart;
+            reactionWaiting = false;
+            
+            if (reactionTime < bestReaction) {
+                bestReaction = reactionTime;
+                document.getElementById('bestTime').textContent = reactionTime;
+            }
+            
+            box.classList.remove('green');
+            box.textContent = `${reactionTime} ms! Try again!`;
+            addReward(1, Math.max(1, 20 - Math.floor(reactionTime / 50)));
+            
+            setTimeout(initReactionGame, 1500);
+        }
+
+        // === TAP GAME ===
+        let tapCount = 0;
+        let tapTimeLeft = 10;
+        let tapActive = false;
+
+        function initTapGame() {
+            tapCount = 0;
+            tapTimeLeft = 10;
+            tapActive = false;
+            document.getElementById('tapCount').textContent = '0';
+            document.getElementById('tapTime').textContent = '10';
+            document.getElementById('tapButton').textContent = 'START! 🖱️';
+        }
+
+        function tap() {
+            if (!tapActive) {
+                tapActive = true;
+                tapCount = 0;
+                tapTimeLeft = 10;
+                document.getElementById('tapButton').textContent = 'CLICK! 🖱️';
+                
+                window.tapInterval = setInterval(() => {
+                    tapTimeLeft--;
+                    document.getElementById('tapTime').textContent = tapTimeLeft;
+                    
+                    if (tapTimeLeft <= 0) {
+                        clearInterval(window.tapInterval);
+                        tapActive = false;
+                        alert(`🎮 Game over! You made ${tapCount} clicks!`);
+                        addReward(Math.floor(tapCount / 10), tapCount * 2);
+                        initTapGame();
+                    }
+                }, 1000);
+            } else {
+                tapCount++;
+                document.getElementById('tapCount').textContent = tapCount;
+            }
+        }
+    </script>
+</body>
+</html>
